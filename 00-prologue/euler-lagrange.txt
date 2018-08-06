@@ -1,0 +1,33 @@
+; Scheme program for implementing Euler-Lagrange equations
+
+; Gamma[w](t) constructs the tuple (t, w(t), Dw(t))
+(define Gamma (lambda (w t) (up t (w t) ((D w) t))))
+
+; Construct lagrangian for Harmonic oscillator
+(define m 1)
+(define k 1)
+(define potential-ho (lambda (x) (* 0.5 k x x)))
+(define kinetic-ho (lambda (xdot) (* 0.5 m xdot xdot)))
+(define lagrangian-ho (lambda (t x xdot) (- (potential-ho x) (kinetic-ho xdot))))
+(define d2L ((partial 2) lagrangian-ho))
+(define d1L ((partial 1) lagrangian-ho))
+
+;now we have to define versions of the above functions which can accept tuples as arguments
+(define lagrangian-ho-tup (lambda (tuple-arg) (lagrangian-ho ((component 0) tuple-arg) ((component 1) tuple-arg) ((component 2) tuple-art))))
+(define d2L-tup (lambda (tuple-arg) (d2L ((component 0) tuple-arg) ((component 1) tuple-arg) ((component 2) tuple-art))))
+(define d1L-ho-tup (lambda (tuple-arg) (d1L ((component 0) tuple-arg) ((component 1) tuple-arg) ((component 2) tuple-art))))
+
+;now we get the terms in the Euler-Lagrange equation
+;term1 is the part in the parentheses, i.e. dL/dqdot
+(define term1 (lambda (w) (lambda (t) (d2L-tup (Gamma w t)))))
+(define term2 (lambda (w) (lambda (t) (d1L-tup (Gamma w t)))))
+
+;residual is now the LHS of the Euler-Lagrange equation, which should evaluate to zero (as a function of time) for all time
+(define residual (lambda (w) (lambda (t) (- ((D(term1 w)) t) ((term2 w) t)))))
+
+;for an example of how this works, cos(t) should work
+((residual cos) 't)
+
+;whereas, exp(t) should not work
+((residual exp) 't)
+
