@@ -1,0 +1,13 @@
+(define m 1)
+(define k 1)
+
+(define potential-ho (lambda (x) (* 0.5 k x x)))
+(define kinetic-ho (lambda(xdot) (* 0.5 m xdot xdot)))
+(define lagrangian-ho (lambda (t x xdot) 
+                                    (- 
+                                        (potential-ho x)
+                                         (kinetic-ho xdot) )
+                                    ))
+(define D0 (partial 0))
+
+(D0 f)
